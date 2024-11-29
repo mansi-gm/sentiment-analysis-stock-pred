@@ -11,8 +11,15 @@ def preprocess_tweets():
     df = pd.read_csv('Datasets/compiled_tweets.csv')
 
     #df.drop(['in_reply_to_status_id', 'in_reply_to_status_id_str', 'in_reply_to_user_id', 'in_reply_to_user_id_str', 'in_reply_to_screen_name', 'user', 'geo', 'coordinates', ])
-    df = df.loc[:, df.count() >= 2131]
-    df = df.drop(columns=['id', 'id_str', 'source', 'truncated', 'user', 'retweet_count', 'favorite_count', 'favorited', 'retweeted', 'entities'], axis=1)
+    # df = df.loc[:, df.count() >= 2131]
+    # df = df.drop(columns=['id', 'id_str', 'source', 'truncated', 'user', 'retweet_count', 'favorite_count', 'favorited', 'retweeted', 'entities'], axis=1)
+
+    imp_cols = ['lang', 'created_at', 'text']
+    df = df.loc[:, (df.count() >= 2131) | df.columns.isin(imp_cols)]
+    df.columns = df.columns.str.replace("'", "").str.strip()
+    cols_to_drop = ['id', 'id_str', 'source', 'truncated', 'user', 'retweet_count', 'favorite_count', 'favorited', 'retweeted', 'entities']
+    df = df.drop(columns=[col for col in cols_to_drop if col in df.columns], axis=1)
+
     df = df[df['lang'] == 'en']
     df = df.drop(columns=['lang'])
 
